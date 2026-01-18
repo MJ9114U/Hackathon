@@ -9,7 +9,7 @@
 <body>
     <h1>Information Trust Scorer</h1>
     <form action="/analyze" method="post">
-        <textarea name="content" placeholder="Paste the content to analyze here...">{{ content }}</textarea>
+        <textarea name="content" placeholder="Paste the content to analyze here...">{{ content or '' }}</textarea>
         <button type="submit">Analyze</button>
     </form>
     {% if result %}

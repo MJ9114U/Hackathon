@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
+from newspaper import Article
 import torch
 import re
 app = Flask(__name__)
@@ -17,7 +18,7 @@ def score_content(content):
     content = content.strip()
 
     if not content:
-        return 0, "No content provided"
+        return 0, ["No content provided"]
 
     # ----- Rule-based checks -----
     emotional_words = ["shocking", "unbelievable", "secret", "miracle", "exposed"]
@@ -34,7 +35,7 @@ def score_content(content):
         reasons.append("No credible source mentioned.")
 
     # ----- ML-based check -----
-    inputs = tokenizer(content, return_tensors="pt", truncation=True, padding=True)
+    inputs = tokenizer(content, return_tensors="pt", truncation=True, padding=True, max_length=512)
     with torch.no_grad():
         outputs = model(**inputs)
         probs = torch.softmax(outputs.logits, dim=1)
@@ -57,9 +58,26 @@ def home():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    content = request.form['content']
-    score, reasons = score_content(content)
-    return render_template('index.html', result={'score': score, 'reasons': reasons}, content=content)
+    user_input = request.form.get('content', '').strip()
+
+    if not user_input:
+        return render_template('index.html', error="Please provide content or URL to analyze", content='')
+
+    # URL Detection Logic
+    if user_input.startswith(('http://', 'https://')):
+        try:
+            article = Article(user_input)
+            article.download()
+            article.parse()
+            # We analyze the Title + Text for better context
+            content_to_analyze = f"{article.title}. {article.text}"
+        except Exception as e:
+            return render_template('index.html', error=f"Could not read URL: {str(e)}", content=user_input)
+    else:
+        content_to_analyze = user_input
+
+    score, reasons = score_content(content_to_analyze)
+    return render_template('index.html', result={'score': score, 'reasons': reasons}, content=user_input)
 
 if __name__ == '__main__':
     app.run(debug=True)

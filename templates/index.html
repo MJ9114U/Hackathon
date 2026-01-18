@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Trust Scorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Information Trust Scorer</h1>
+    <form action="/analyze" method="post">
+        <textarea name="content" placeholder="Paste the content to analyze here..."></textarea>
+        <button type="submit">Analyze</button>
+    </form>
+    {% if result %}
+    <div class="result">
+        <h2>Trust Risk Score: {{ result.score }}</h2>
+        <p>{{ result.explanation }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>

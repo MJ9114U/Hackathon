@@ -1,0 +1,5 @@
+flask==2.3.3
+transformers==4.21.0
+torch==1.12.1
+spacy==3.5.0
+nltk==3.8.1

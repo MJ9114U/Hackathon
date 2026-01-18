@@ -12,9 +12,16 @@
         <textarea name="content" placeholder="Paste the content to analyze here...">{{ content or '' }}</textarea>
         <button type="submit">Analyze</button>
     </form>
+
+    {% if error %}
+    <div class="error">
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+
     {% if result %}
-    <div class="result">
-        <h2>Trust Risk Score: {{ result.score }}</h2>
+    <div class="result" style="border-left-color: {{ 'red' if result.score > 70 else 'orange' if result.score > 40 else 'green' }};">
+        <h2>Trust Risk Score: <span style="color: {{ 'red' if result.score > 70 else 'orange' if result.score > 40 else 'green' }};">{{ result.score }}</span></h2>
         <ul>
             {% for reason in result.reasons %}
             <li>{{ reason }}</li>

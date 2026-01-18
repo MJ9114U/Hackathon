@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
-from newspaper import Article
+from requests_html import HTMLSession
+
 import torch
 import re
 app = Flask(__name__)
@@ -43,8 +44,11 @@ def score_content(content):
     
     ml_score = int(high_risk_prob * 3)  # scale 0-3
     risk_score += ml_score
-    if high_risk_prob > 0.5:
+    if high_risk_prob >= 0.5:
         reasons.append(f"ML model flagged content as high risk ({high_risk_prob:.2f}).")
+    else:
+        reasons.append(f"ML model flagged content as low risk ({high_risk_prob:.2f}).")
+
 
     # Clamp final score between 1-10
     risk_score = max(1, min(10, risk_score))
@@ -66,11 +70,21 @@ def analyze():
     # URL Detection Logic
     if user_input.startswith(('http://', 'https://')):
         try:
-            article = Article(user_input)
-            article.download()
-            article.parse()
+            session = HTMLSession()
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+            response = session.get(user_input, headers=headers, timeout=10)
+            title = response.html.find('h1', first=True)
+            paragraphs = response.html.find('p')
+
+            title_text = title.text if title else "No Title Found"
+            content_text = " ".join([p.text for p in paragraphs])
+
+            if not content_text.strip():
+                return render_template('index.html', error="Could not extract text content from this URL.", content=user_input)
+            
             # We analyze the Title + Text for better context
-            content_to_analyze = f"{article.title}. {article.text}"
+            content_to_analyze = f"{title_text}. {content_text}"
+
         except Exception as e:
             return render_template('index.html', error=f"Could not read URL: {str(e)}", content=user_input)
     else:

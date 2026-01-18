@@ -9,13 +9,13 @@
 <body>
     <h1>Information Trust Scorer</h1>
     <form action="/analyze" method="post">
-        <textarea name="content" placeholder="Paste the content to analyze here..."></textarea>
+        <textarea name="content" placeholder="Paste the content to analyze here...">{{ content }}</textarea>
         <button type="submit">Analyze</button>
     </form>
     {% if result %}
     <div class="result">
         <h2>Trust Risk Score: {{ result.score }}</h2>
-        <p>{{ result.explanation }}</p>
+        <p>{{ result.reasons }}</p>
     </div>
     {% endif %}
 </body>

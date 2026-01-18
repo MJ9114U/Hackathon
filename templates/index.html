@@ -15,7 +15,11 @@
     {% if result %}
     <div class="result">
         <h2>Trust Risk Score: {{ result.score }}</h2>
-        <p>{{ result.reasons }}</p>
+        <ul>
+            {% for reason in result.reasons %}
+            <li>{{ reason }}</li>
+            {% endfor %}
+        </ul>
     </div>
     {% endif %}
 </body>

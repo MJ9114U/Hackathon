@@ -48,7 +48,6 @@ def score_content(content):
     # Clamp final score between 1-10
     risk_score = max(1, min(10, risk_score))
 
-    reasons = " ".join(reasons)
     return risk_score, reasons
 
 

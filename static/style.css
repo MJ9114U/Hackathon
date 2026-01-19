@@ -1,58 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
+    background: radial-gradient(circle at top, #0f172a, #020617);
+    font-family: 'Inter', sans-serif;
+    color: #e5e7eb;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app-container {
+    width: 90%;
+    max-width: 900px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.4);
 }
 
 h1 {
-    color: #2c3e50;
     text-align: center;
+    margin-bottom: 30px;
 }
 
 textarea {
     width: 100%;
-    height: 180px;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box; /* Ensures padding doesn't affect width */
-    font-size: 16px;
-    resize: vertical;
+    min-height: 140px;
+    box-sizing: border-box;
+    border-radius: 14px;
+    border: none;
+    padding: 16px 18px;
+    background: rgba(255,255,255,0.07);
+    color: #e5e7eb;
+    resize: none;
+    outline: none;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 button {
-    display: block;
     width: 100%;
+    margin-top: 12px;
     padding: 12px;
-    background-color: #3498db;
-    color: white;
+    border-radius: 12px;
     border: none;
-    border-radius: 8px;
-    font-size: 18px;
+    background: linear-gradient(135deg, #3b82f6, #22d3ee);
+    color: black;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: opacity 0.2s;
 }
 
 button:hover {
-    background-color: #2980b9;
+    opacity: 0.9;
 }
 
-.result {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    border-left: 5px solid #3498db;
+.result-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Aligns panels to the top */
+    gap: 40px;
+    margin-top: 40px;
+    flex-wrap: wrap;
 }
 
-.result h2 {
-    margin-top: 0;
-    color: #2c3e50;
+.left-panel {
+    flex: 1;
+}
+
+.score-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: #22d3ee;
+    margin-bottom: 15px;
 }
 
 ul {
@@ -60,5 +83,118 @@ ul {
 }
 
 li {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    color: #d1d5db;
+    line-height: 1.4;
+}
+
+/* --- RIGHT PANEL & METER ALIGNMENT --- */
+
+.right-panel {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 280px; /* Ensures space for both % and Circle */
+}
+
+.circular-meter-container {
+    display: flex;
+    align-items: center;    /* Vertically centers % with the Circle */
+    justify-content: center;
+    gap: 24px;              /* Space between % and the meter */
+    margin-bottom: 20px;
+}
+
+.ml-percentage {
+    font-size: 32px;        /* Significantly larger size */
+    font-weight: 700;
+    color: #22d3ee;
+    text-align: right;
+    line-height: 1;
+}
+
+/* --- CIRCULAR METER CORE --- */
+
+.circle-wrap {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: #1e293b;   /* Slightly lighter than BG to see the track */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.circle {
+    width: 150px;
+    height: 150px;
+    position: relative;
+}
+
+.mask, .fill {
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    border-radius: 50%;
+}
+
+.mask {
+    clip: rect(0px, 150px, 150px, 75px);
+}
+
+.fill {
+    clip: rect(0px, 75px, 150px, 0px);
+}
+
+.inside-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #020617; /* Matches app background */
+    line-height: 120px;
+    text-align: center;
+    margin: 15px;
+    position: absolute;
+    font-weight: 700;
+    font-size: 24px;
+    color: #e5e7eb;
+}
+
+/* --- DYNAMIC COLORS --- */
+
+.low-fill {
+    background: linear-gradient(135deg, #22d3ee, #3b82f6);
+}
+
+.moderate-fill {
+    background: linear-gradient(135deg, #facc15, #fb923c);
+}
+
+.high-fill {
+    background: linear-gradient(135deg, #fb7185, #ef4444);
+}
+
+.risk-label {
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 999px;
+    display: inline-block;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.low { background: rgba(34,197,94,0.15); color: #4ade80; }
+.moderate { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.high { background: rgba(239,68,68,0.15); color: #f87171; }
+
+.error-box {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(239,68,68,0.2);
+    color: #fecaca;
+    text-align: center;
 }

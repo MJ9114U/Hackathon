@@ -1,33 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <title>Information Trust Scorer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Information Trust Scorer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
-    <h1>Information Trust Scorer</h1>
-    <form action="/analyze" method="post">
-        <textarea name="content" placeholder="Paste the content to analyze here...">{{ content or '' }}</textarea>
-        <button type="submit">Analyze</button>
-    </form>
 
-    {% if error %}
-    <div class="error">
-        <p>{{ error }}</p>
-    </div>
-    {% endif %}
+    <div class="app-container">
+        <h1>TRUEVO</h1>
 
-    {% if result %}
-    <div class="result" style="border-left-color: {{ 'red' if result.score > 70 else 'orange' if result.score > 40 else 'green' }};">
-        <h2>Trust Risk Score: <span style="color: {{ 'red' if result.score > 70 else 'orange' if result.score > 40 else 'green' }};">{{ result.score }}</span></h2>
-        <ul>
-            {% for reason in result.reasons %}
-            <li>{{ reason }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
+        <form action="/analyze" method="post">
+            <textarea name="content" placeholder="Paste text or URL here...">{{ content or '' }}</textarea>
+            <button type="submit">Analyze</button>
+        </form>
+
+        {% if error %}
+        <div class="error-box">{{ error }}</div>
+        {% endif %}
+
+        {% if result %}
+        <div class="result-container">
+
+            <!-- LEFT: Score + Reasons -->
+            <div class="left-panel">
+                <h2>Trust Risk Score</h2>
+                <div class="score-number">{{ result.score }}/10</div>
+
+                <ul>
+                    {% for reason in result.reasons %}
+                    <li>{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- RIGHT: Circular Meter -->
+            <div class="right-panel">
+                <div class="circular-meter-container">
+                    <!-- ML Percentage on the left -->
+                    <div class="ml-percentage">
+                        {{ result.ml_percentage }}%
+                    </div>
+
+                    <!-- Circular meter -->
+                    <div class="circle-wrap">
+                        <div class="circle">
+                            <div class="mask full">
+                                <div class="fill 
+                    {% if result.score <= 3 %}low-fill
+                    {% elif result.score <= 6 %}moderate-fill
+                    {% else %}high-fill{% endif %}" style="transform: rotate({{ result.score * 18 }}deg);">
+                                </div>
+                            </div>
+                            <div class="mask half">
+                                <div class="fill 
+                    {% if result.score <= 3 %}low-fill
+                    {% elif result.score <= 6 %}moderate-fill
+                    {% else %}high-fill{% endif %}" style="transform: rotate({{ result.score * 18 }}deg);">
+                                </div>
+                            </div>
+                            <div class="inside-circle">
+                                {{ result.score }}/10
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="risk-label
+                    {% if result.score <= 3 %}low{% elif result.score <= 6 %}moderate{% else %}high{% endif %}">
+                    {% if result.score <= 3 %}Low Risk {% elif result.score <=6 %}Moderate Risk {% else %}High Risk 
+                    {% endif %} 
+                    </div>
+                </div>
+
+
+            </div>
+            {% endif %}
+        </div>
+
 </body>
+
 </html>

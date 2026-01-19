@@ -22,7 +22,34 @@ def score_content(content):
         return 0, ["No content provided"]
 
     # ----- Rule-based checks -----
-    emotional_words = ["shocking", "unbelievable", "secret", "miracle", "exposed"]
+    emotional_words = ["shocking", 
+                       "unbelievable", 
+                       "secret", 
+                       "miracle", 
+                       "exposed", 
+                       "you won’t believe",
+                        "what happens next",
+                        "shocking truth",
+                        "this will change everything",
+                        "what nobody tells you",
+                        "exposed",
+                        "leaked",
+                        "revealed",
+                        "secret",
+                        "hidden truth",
+                        "must see",
+                        "goes viral",
+                        "breaking",
+                        "disgusting",
+                        "corrupt",
+                        "evil",
+                        "traitor",
+                        "criminal",
+                        "betrayal",
+                        "destroying",
+                        "lying",
+                        "rigged",]
+    
     if any(word in content.lower() for word in emotional_words):
         risk_score += 3
         reasons.append("Contains emotionally manipulative words.")
@@ -31,7 +58,34 @@ def score_content(content):
         risk_score += 2
         reasons.append("Excessive capitalization detected, may indicate sensationalism.")
 
-    if not any(word in content.lower() for word in ["source", "study", "report", "according to"]):
+    source_indicators = [
+    "research",
+    "data",
+    "evidence",
+    "findings",
+    "statistics",
+    "survey",
+    "analysis",
+    "published",
+    "peer-reviewed",
+    "journal",
+    "official",
+    "government",
+    "experts say",
+    "scientists say",
+    "researchers say",
+    "verified",
+    "fact-checked",
+    "documented",
+    "case study",
+    "white paper",
+    "source", 
+    "study", 
+    "report", 
+    "according to"
+    ]
+
+    if not any(word in content.lower() for word in source_indicators):
         risk_score += 2
         reasons.append("No credible source mentioned.")
 
@@ -53,7 +107,7 @@ def score_content(content):
     # Clamp final score between 1-10
     risk_score = max(1, min(10, risk_score))
 
-    return risk_score, reasons
+    return risk_score, reasons, high_risk_prob
 
 
 @app.route('/')
@@ -90,8 +144,8 @@ def analyze():
     else:
         content_to_analyze = user_input
 
-    score, reasons = score_content(content_to_analyze)
-    return render_template('index.html', result={'score': score, 'reasons': reasons}, content=user_input)
+    score, reasons, high_risk_prob = score_content(content_to_analyze)
+    return render_template('index.html', result={'score': score, 'reasons': reasons, 'ml_percentage': int(high_risk_prob * 100)}, content=user_input)
 
 if __name__ == '__main__':
     app.run(debug=True)
